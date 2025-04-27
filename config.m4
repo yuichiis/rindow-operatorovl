@@ -18,8 +18,6 @@ PHP_ARG_ENABLE([rindow_operatorovl],
 dnl ########################################
 dnl Build Process Actions (if extension is enabled)
 dnl ########################################
-dnl if test "$PHP_RINDOW_OPERATOROVL" != "no"; then
-
   dnl Define a C macro so the source code knows the extension is enabled
   AC_DEFINE(HAVE_RINDOW_OPERATOROVL, 1, [ Whether rindow_operatorovl support is enabled ])
 
@@ -44,5 +42,3 @@ dnl if test "$PHP_RINDOW_OPERATOROVL" != "no"; then
   PHP_NEW_EXTENSION(rindow_operatorovl,
     [rindow_operatorovl.c],
     $ext_shared)
-
-dnl fi
