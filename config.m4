@@ -3,7 +3,7 @@ dnl config.m4 for rindow_operatorovl extension
 dnl ########################################
 dnl Basic Extension Information
 dnl ########################################
-AC_INIT([rindow_operatorovl], [0.1.0], [https://github.com/yuichiis/rindow-operatorovl/issues])
+AC_INIT([rindow_operatorovl], [0.1.0], [])
 AC_CONFIG_SRCDIR([rindow_operatorovl.c])
 PHP_INIT_BUILD_SYSTEM()
 
