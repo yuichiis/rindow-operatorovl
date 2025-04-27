@@ -1,94 +1,49 @@
-dnl config.m4 for extension extskel
+dnl config.m4 for rindow_operatorovl extension
 
-dnl Comments in this file start with the string 'dnl'.
-dnl Remove where necessary.
+dnl ########################################
+dnl Basic Extension Information
+dnl ########################################
+AC_INIT([rindow_operatorovl], [0.1.0], [https://github.com/yuichiis/rindow-operatorovl/issues])
+AC_CONFIG_SRCDIR([rindow_operatorovl.c])
+PHP_INIT_BUILD_SYSTEM()
 
-dnl If your extension references something external, use 'with':
+dnl ########################################
+dnl Configure Option (--enable-rindow_operatorovl)
+dnl ########################################
+PHP_ARG_ENABLE([rindow_operatorovl],
+  [whether to enable rindow_operatorovl support],
+  [AS_HELP_STRING([--enable-rindow_operatorovl],
+    [Enable rindow_operatorovl support])],
+  [yes])
 
-dnl PHP_ARG_WITH([extskel],
-dnl   [for extskel support],
-dnl   [AS_HELP_STRING([--with-extskel],
-dnl     [Include extskel support])])
+dnl ########################################
+dnl Build Process Actions (if extension is enabled)
+dnl ########################################
+if test "$PHP_RINDOW_OPERATOROVL" != "no"; then
 
-dnl Otherwise use 'enable':
+  dnl Define a C macro so the source code knows the extension is enabled
+  AC_DEFINE(HAVE_RINDOW_OPERATOROVL, 1, [ Whether rindow_operatorovl support is enabled ])
 
-PHP_ARG_ENABLE([extskel],
-  [whether to enable extskel support],
-  [AS_HELP_STRING([--enable-extskel],
-    [Enable extskel support])],
-  [no])
-
-if test "$PHP_EXTSKEL" != "no"; then
-  dnl Write more examples of tests here...
-
-  dnl Remove this code block if the library does not support pkg-config.
-  dnl PKG_CHECK_MODULES([LIBFOO], [foo])
+  dnl ########################################
+  dnl Dependency Checks (Uncomment and modify if needed)
+  dnl ########################################
+  dnl If your extension depends on external libraries, add checks here.
+  dnl Example using pkg-config:
+  dnl PKG_CHECK_MODULES([LIBFOO], [foo >= 1.2])
   dnl PHP_EVAL_INCLINE($LIBFOO_CFLAGS)
-  dnl PHP_EVAL_LIBLINE($LIBFOO_LIBS, EXTSKEL_SHARED_LIBADD)
-
-  dnl If you need to check for a particular library version using PKG_CHECK_MODULES,
-  dnl you can use comparison operators. For example:
-  dnl PKG_CHECK_MODULES([LIBFOO], [foo >= 1.2.3])
-  dnl PKG_CHECK_MODULES([LIBFOO], [foo < 3.4])
-  dnl PKG_CHECK_MODULES([LIBFOO], [foo = 1.2.3])
-
-  dnl Remove this code block if the library supports pkg-config.
-  dnl --with-extskel -> check with-path
-  dnl SEARCH_PATH="/usr/local /usr"     # you might want to change this
-  dnl SEARCH_FOR="/include/extskel.h"  # you most likely want to change this
-  dnl if test -r $PHP_EXTSKEL/$SEARCH_FOR; then # path given as parameter
-  dnl   EXTSKEL_DIR=$PHP_EXTSKEL
-  dnl else # search default path list
-  dnl   AC_MSG_CHECKING([for extskel files in default path])
-  dnl   for i in $SEARCH_PATH ; do
-  dnl     if test -r $i/$SEARCH_FOR; then
-  dnl       EXTSKEL_DIR=$i
-  dnl       AC_MSG_RESULT(found in $i)
-  dnl     fi
-  dnl   done
-  dnl fi
+  dnl PHP_EVAL_LIBLINE($LIBFOO_LIBS, RINDOW_OPERATOROVL_SHARED_LIBADD)
   dnl
-  dnl if test -z "$EXTSKEL_DIR"; then
-  dnl   AC_MSG_RESULT([not found])
-  dnl   AC_MSG_ERROR([Please reinstall the extskel distribution])
-  dnl fi
+  dnl Example checking for a header and library manually:
+  dnl PHP_CHECK_HEADER([some_lib.h], [...], AC_MSG_ERROR([header missing]))
+  dnl PHP_CHECK_LIBRARY([somelib], [some_function], [...], AC_MSG_ERROR([library missing or old]))
 
-  dnl Remove this code block if the library supports pkg-config.
-  dnl --with-extskel -> add include path
-  dnl PHP_ADD_INCLUDE($EXTSKEL_DIR/include)
+  dnl PHP_SUBST(RINDOW_OPERATOROVL_SHARED_LIBADD) dnl <-- If using external libs
 
-  dnl Remove this code block if the library supports pkg-config.
-  dnl --with-extskel -> check for lib and symbol presence
-  dnl LIBNAME=EXTSKEL # you may want to change this
-  dnl LIBSYMBOL=EXTSKEL # you most likely want to change this
+  dnl ########################################
+  dnl Finalize the extension build
+  dnl ########################################
+  PHP_NEW_EXTENSION(rindow_operatorovl,
+    [src/rindow_operatorovl.c],
+    $ext_shared)
 
-  dnl If you need to check for a particular library function (e.g. a conditional
-  dnl or version-dependent feature) and you are using pkg-config:
-  dnl PHP_CHECK_LIBRARY($LIBNAME, $LIBSYMBOL,
-  dnl [
-  dnl   AC_DEFINE(HAVE_EXTSKEL_FEATURE, 1, [ ])
-  dnl ],[
-  dnl   AC_MSG_ERROR([FEATURE not supported by your extskel library.])
-  dnl ], [
-  dnl   $LIBFOO_LIBS
-  dnl ])
-
-  dnl If you need to check for a particular library function (e.g. a conditional
-  dnl or version-dependent feature) and you are not using pkg-config:
-  dnl PHP_CHECK_LIBRARY($LIBNAME, $LIBSYMBOL,
-  dnl [
-  dnl   PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $EXTSKEL_DIR/$PHP_LIBDIR, EXTSKEL_SHARED_LIBADD)
-  dnl   AC_DEFINE(HAVE_EXTSKEL_FEATURE, 1, [ ])
-  dnl ],[
-  dnl   AC_MSG_ERROR([FEATURE not supported by your extskel library.])
-  dnl ],[
-  dnl   -L$EXTSKEL_DIR/$PHP_LIBDIR -lm
-  dnl ])
-  dnl
-  dnl PHP_SUBST(EXTSKEL_SHARED_LIBADD)
-
-  dnl In case of no dependencies
-  AC_DEFINE(HAVE_EXTSKEL, 1, [ Have extskel support ])
-
-  PHP_NEW_EXTENSION(extskel, extskel.c, $ext_shared)
 fi

@@ -1,0 +1,83 @@
+name: Build PHP Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php: ['8.4']
+        #php: ['8.1', '8.2', '8.3']
+
+    name: Build on ${{ matrix.os }} for PHP ${{ matrix.php }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: none
+        tools: phpize, php-config
+      #env:
+      #  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install build dependencies (Ubuntu)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y build-essential
+
+    - name: Get Extension version
+      id: ext_version
+      run: |
+        VERSION=$(grep 'AC_INIT' config.m4 | cut -d ',' -f 2 | xargs)
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Build extension
+      run: |
+        phpize
+        ./configure --enable-rindow_operatorovl
+        make clean
+        make
+
+    - name: Determine Artifact Info
+      id: artifact_info
+      run: |
+        MODULE_PATH=$(find modules/ -name rindow_operatorovl.so)
+        if [[ -z "$MODULE_PATH" ]]; then
+          echo "Error: Built extension .so file not found!"
+          exit 1
+        fi
+        ARTIFACT_NAME="rindow_operatorovl-${{ steps.ext_version.outputs.version }}-php${{ matrix.php }}-${{ matrix.os }}.so"
+        echo "path=${MODULE_PATH}" >> $GITHUB_OUTPUT
+        echo "name=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
+        echo "Built artifact: ${ARTIFACT_NAME}"
+        echo "Artifact path: ${MODULE_PATH}"
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.artifact_info.outputs.name }}
+        path: ${{ steps.artifact_info.outputs.path }}
+        retention-days: 7
+
+    - name: Upload Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ steps.artifact_info.outputs.path }}
+        asset_name: ${{ steps.artifact_info.outputs.name }}
+        asset_content_type: application/octet-stream
