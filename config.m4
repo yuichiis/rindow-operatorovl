@@ -12,8 +12,7 @@ dnl Configure Option (--enable-rindow_operatorovl)
 dnl ########################################
 PHP_ARG_ENABLE([rindow_operatorovl],
   [whether to enable rindow_operatorovl support],
-  [AS_HELP_STRING([--enable-rindow_operatorovl],
-    [Enable rindow_operatorovl support])],
+  [--enable-rindow_operatorovl    Enable rindow_operatorovl support],
   [yes])
 
 dnl ########################################
