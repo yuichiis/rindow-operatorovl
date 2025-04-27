@@ -43,7 +43,7 @@ if test "$PHP_RINDOW_OPERATOROVL" != "no"; then
   dnl Finalize the extension build
   dnl ########################################
   PHP_NEW_EXTENSION(rindow_operatorovl,
-    [src/rindow_operatorovl.c],
+    [rindow_operatorovl.c],
     $ext_shared)
 
 fi
