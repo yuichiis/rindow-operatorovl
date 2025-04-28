@@ -65,22 +65,43 @@ static zend_bool operator_get_method(
     zend_fcall_info *fci,
     zend_fcall_info_cache *fcc)
 {
+    zend_bool is_callable;
+#if !(PHP_MAJOR_VERSION == 8 && PHP_MINOR_VERSION >= 2)
+    // Use the SILENT flag only for PHP 8.1 and below
+    const uint32_t callable_flags = IS_CALLABLE_CHECK_SILENT;
+#else
+    // No flags (0) for PHP 8.2 and later
+    const uint32_t callable_flags = 0;
+    zend_error_handling error_handling; // Save error handling for PHP 8.2+
+#endif
+
     memset(fci, 0, sizeof(zend_fcall_info));
     fci->size = sizeof(zend_fcall_info);
     fci->object = Z_OBJ_P(obj);
     ZVAL_STR(&(fci->function_name), method);
 
-    if(!zend_is_callable_ex(
+#if PHP_MAJOR_VERSION == 8 && PHP_MINOR_VERSION >= 2
+    // If you're using PHP 8.2+, temporarily switch error handling to exception mode.
+    // This will catch the 'Error' raised by zend_is_callable_ex and allow processing to continue.
+    zend_replace_error_handling(EH_THROW, NULL, &error_handling);
+#endif
+
+    is_callable = zend_is_callable_ex(
             &(fci->function_name),
             fci->object,
+            callable_flags
+            NULL, fcc, NULL);
+
 #if PHP_MAJOR_VERSION == 8 && PHP_MINOR_VERSION >= 2
-            IS_CALLABLE_SUPPRESS_DEPRECATIONS,
-#else
-            IS_CALLABLE_CHECK_SILENT,
+    // For PHP 8.2+, revert error handling
+    zend_restore_error_handling(&error_handling);
 #endif
-            NULL, fcc, NULL)) {
+
+    // Fail if zend_is_callable_ex returns false (method doesn't exist, is private, etc.)
+    if (!is_callable) {
         return FAILURE;
     }
+
     /* Disallow dispatch via __call */
     if (fcc->function_handler == Z_OBJCE_P(obj)->__call) {
         return FAILURE;
