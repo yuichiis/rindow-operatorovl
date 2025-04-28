@@ -40,7 +40,7 @@ jobs:
     - name: Get Extension version from header
       id: ext_version
       run: |
-        VERSION=$(grep '#define PHP_RINDOW_OPERATOROVL_VERSION' php_rindow_operatorovl.h | cut -d '"' -f 2)
+        VERSION=$(grep 'define PHP_RINDOW_OPERATOROVL_VERSION' php_rindow_operatorovl.h | cut -d '"' -f 2)
         if [[ -z "$VERSION" ]]; then
           echo "Error: Could not extract version from php_rindow_operatorovl.h"
           exit 1
