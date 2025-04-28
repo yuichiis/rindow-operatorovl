@@ -73,7 +73,11 @@ static zend_bool operator_get_method(
     if(!zend_is_callable_ex(
             &(fci->function_name),
             fci->object,
-            0, // IS_CALLABLE_CHECK_SILENT,
+#if PHP_MAJOR_VERSION == 8 && PHP_MINOR_VERSION >= 2
+            IS_CALLABLE_SUPPRESS_DEPRECATIONS,
+#else
+            IS_CALLABLE_CHECK_SILENT,
+#endif
             NULL, fcc, NULL)) {
         return FAILURE;
     }
