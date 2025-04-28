@@ -21,11 +21,14 @@ else
         INI_DIR=`$PHP_CONFIG --ini-dir`
 fi
 RINDOW_OPERATOROVL_VERSION=`fgrep "# define PHP_RINDOW_OPERATOROVL_VERSION" php_rindow_operatorovl.h | cut -d " " -f 4 | cut -d "\"" -f 2`
+ARCHITECTURE=`dpkg --print-architecture`
+
 #. /etc/os-release
 #OS_VERSION=$ID$VERSION_ID
 echo EXTENSION_DIR=$EXTENSION_DIR
 echo INI_DIR=$INI_DIR
 echo RINDOW_OPERATOROVL_VERSION=$RINDOW_OPERATOROVL_VERSION
+echo ARCHITECTURE=$ARCHITECTURE
 #echo OS_VERSION=$OS_VERSION
 rm -rf $PKG_WORK
 mkdir -p $PKG_WORK$EXTENSION_DIR
@@ -37,6 +40,7 @@ cp conf/20-rindow_operatorovl.ini $PKG_WORK$INI_DIR/.
 chmod 744 $PKG_WORK$INI_DIR/20-rindow_operatorovl.ini
 sed -e s/%PHP_RINDOW_OPERATOROVL_VERSION%/$RINDOW_OPERATOROVL_VERSION/g debian/control | \
 #sed -e s/%OS_VERSION%/$OS_VERSION/g | \
+sed -e s/%ARCHITECTURE%/$ARCHITECTURE/g | \
 sed -e s/%PHP_VERSION%/$PHP_VERSION/g > $PKG_WORK/DEBIAN/control
 #sed -e s@%EXTENSION_DIR%@$EXTENSION_DIR@ debian/rules | \
 #sed -e s@%INI_DIR%@$INI_DIR@ debian/rules | \

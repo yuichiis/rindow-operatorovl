@@ -1,6 +1,6 @@
 Package: rindow-operatorovl-php%PHP_VERSION%
 Maintainer: Rindow Developers <rindow@users.noreply.github.com>
-Architecture: amd64
+Architecture: %ARCHITECTURE%
 Depends: php%PHP_VERSION%-common
 Version: %PHP_RINDOW_OPERATOROVL_VERSION%
 Homepage: https://rindow.github.io/
