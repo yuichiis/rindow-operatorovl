@@ -66,7 +66,7 @@ static zend_bool operator_get_method(
     zend_fcall_info_cache *fcc)
 {
     zend_bool is_callable;
-#if !(PHP_MAJOR_VERSION == 8 && PHP_MINOR_VERSION >= 2)
+#if !(PHP_MAJOR_VERSION >= 8 && PHP_MINOR_VERSION >= 2)
     // Use the SILENT flag only for PHP 8.1 and below
     const uint32_t callable_flags = IS_CALLABLE_CHECK_SILENT;
 #else
