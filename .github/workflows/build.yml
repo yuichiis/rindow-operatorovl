@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: ['8.4']
+        php: ['8.1']
         #php: ['8.1', '8.2', '8.3']
 
     name: Build on ${{ matrix.os }} for PHP ${{ matrix.php }}
@@ -40,8 +40,13 @@ jobs:
     - name: Get Extension version
       id: ext_version
       run: |
-        VERSION=$(grep 'AC_INIT' config.m4 | cut -d ',' -f 2 | xargs)
+        VERSION=$(grep '#define PHP_RINDOW_OPERATOROVL_VERSION' php_rindow_operatorovl.h | cut -d '"' -f 2)
+        if [[ -z "$VERSION" ]]; then
+          echo "Error: Could not extract version from php_rindow_operatorovl.h"
+          exit 1
+        fi
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Extracted version: ${VERSION}"
 
     - name: Build extension
       run: |

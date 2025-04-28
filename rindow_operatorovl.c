@@ -35,6 +35,7 @@ PHP_MINFO_FUNCTION(rindow_operatorovl)
 {
     php_info_print_table_start();
     php_info_print_table_header(2, "rindow operator overloading support", "enabled");
+    php_info_print_table_row(2, "Version", PHP_RINDOW_OPERATOROVL_VERSION);
     php_info_print_table_end();
 }
 /* }}} */
