@@ -15,8 +15,10 @@ jobs:
     strategy:
       fail-fast: false # 1つのジョブが失敗しても他のジョブは継続する
       matrix:
-        os: [ubuntu-latest, windows-latest] # ビルドするOS
-        php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
+        os: [windows-latest] # ビルドするOS
+        php: ['8.3'] # ビルド対象のPHPバージョン
+        # os: [ubuntu-latest, windows-latest] # ビルドするOS
+        # php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
         # Windows ビルドでは NTS (Non Thread Safe) が一般的。必要なら TS も追加
         # ts: [nts] # 必要なら [nts, ts]
 
@@ -86,10 +88,13 @@ jobs:
     - name: Build extension (Windows)
       if: runner.os == 'Windows'
       run: |
+        command -v phpize || { echo "phpize not found in PATH"; exit 1; }
+        command -v configure || { echo "configure not found in PATH"; exit 1; }
+        command -v nmake || { echo "nmake not found in PATH"; exit 1; }      
         phpize
         configure --enable-rindow_operatorovl=yes # config.w32 の ARG_ENABLE に合わせる
         nmake
-      shell: cmd # Windows のコマンドプロンプトを使用
+      shell: bash # Windows のコマンドプロンプトを使用
 
     # 6. テストを実行 (OS別に分岐)
     - name: Run tests (Linux)
