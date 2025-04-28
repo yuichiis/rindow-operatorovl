@@ -34,7 +34,7 @@ jobs:
 
     - name: Install build and packaging dependencies (Ubuntu)
       run: |
-        sudo apt-get update
+        sudo apt-get update --allow-releaseinfo-change
         sudo apt-get install -y build-essential dpkg-dev fakeroot
 
     - name: Get Extension version from header
