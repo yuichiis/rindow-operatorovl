@@ -1,0 +1,8 @@
+Package: rindow-operatorovl-php%PHP_VERSION%
+Maintainer: Rindow Developers <rindow@users.noreply.github.com>
+Architecture: amd64
+Depends: php%PHP_VERSION%-common
+Version: %PHP_RINDOW_OPERATOROVL_VERSION%
+Homepage: https://rindow.github.io/
+Description: Rindow Operator overloading PHP extension
+ The Rindow Operator overloading PHP extension is overloading PHP operator with a custom class.
