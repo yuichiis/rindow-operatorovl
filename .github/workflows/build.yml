@@ -10,88 +10,146 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Linux と Windows のマトリックス定義
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: false # 1つのジョブが失敗しても他のジョブは継続する
       matrix:
-        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        os: [ubuntu-latest, windows-latest] # ビルドするOS
+        php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
+        # Windows ビルドでは NTS (Non Thread Safe) が一般的。必要なら TS も追加
+        # ts: [nts] # 必要なら [nts, ts]
 
-    name: Build and Package on Ubuntu for PHP ${{ matrix.php }}
+    name: Build on ${{ matrix.os }} for PHP ${{ matrix.php }}
 
     steps:
+    # 1. リポジトリのコードをチェックアウト
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # 2. 指定したPHPバージョンをセットアップ
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-        extensions: none
-        tools: phpize, php-config
+        extensions: none # この拡張自体をビルドするため、他の拡張は不要
+        # tools: phpize, php-config # Linuxでは有用だがWindowsでは不要
+        # ini-values: opcache.enable=0 # 必要に応じてINI設定を追加
+        # coverage: none
+        # env:
+        #  PHP_SDK_VS_VERSION: 2019 # Windows で使用する VS のバージョンを指定する場合
       env:
+        # PHP_TS: ${{ matrix.ts }} # スレッドセーフティをマトリックスにする場合
         COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    # 3. ビルドとパッケージングに必要な依存パッケージをインストール (OS別に分岐)
     - name: Install build and packaging dependencies (Ubuntu)
+      if: runner.os == 'Linux'
       run: |
         sudo apt-get update --allow-releaseinfo-change
-        sudo apt-get install -y build-essential dpkg-dev fakeroot
+        # build-essential: コンパイラ等, dpkg-dev: dpkg-debを含む, fakeroot: root権限なしでファイル所有者を偽装
+        sudo apt-get install -y build-essential dpkg-dev fakeroot php${{ matrix.php }}-dev # php-devパッケージも明示的にインストール
 
+    # Windows の場合、setup-php が Visual Studio のビルド環境をある程度設定してくれるはず
+    # 不足があればここに追加 (例: choco install ...)
+    - name: Install build dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        # 通常、追加のインストールは不要なことが多い
+        echo "Windows build environment setup by setup-php"
+
+    # 4. 拡張機能のバージョンを取得 (php_rindow_operatorovl.hから取得)
     - name: Get Extension version from header
       id: ext_version
       run: |
+        # sed を使用してバージョン番号を抽出
         VERSION=$(sed -n 's/^ *# *define PHP_RINDOW_OPERATOROVL_VERSION *"\([^"]*\)".*/\1/p' php_rindow_operatorovl.h)
+        # 念のためバージョンが取得できたかチェック
         if [[ -z "$VERSION" ]]; then
           echo "Error: Could not extract version from php_rindow_operatorovl.h"
+          cat php_rindow_operatorovl.h || true
           exit 1
         fi
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
         echo "Extracted version: ${VERSION}"
+      shell: bash # Windows でも sed を使うために bash を指定
 
-    - name: Build extension
+    # 5. PHP拡張をビルド (OS別に分岐)
+    - name: Build extension (Linux)
+      if: runner.os == 'Linux'
       run: |
-        phpize
-        ./configure --enable-rindow_operatorovl
+        phpize${{ matrix.php }} # phpize もバージョン指定
+        ./configure --with-php-config=$(which php-config${{ matrix.php }}) --enable-rindow_operatorovl
         make clean
         make
 
-    - name: Run tests
+    - name: Build extension (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        # setup-php が phpize.bat へのパスを通してくれるはず
+        phpize
+        # configure スクリプトを実行 (Windows用、config.w32 が使われる)
+        # enable オプションが必要な場合は追加 (--enable-rindow_operatorovl は config.w32 内の ARG_ENABLE で処理されるはず)
+        configure --enable-rindow_operatorovl=yes # config.w32 の ARG_ENABLE に合わせる
+        # nmake でビルド
+        nmake
+      shell: cmd # Windows のコマンドプロンプトを使用
+
+    # 6. テストを実行 (OS別に分岐)
+    - name: Run tests (Linux)
+      if: runner.os == 'Linux'
       run: make test
       env:
         NO_INTERACTION: 1
         REPORT_EXIT_STATUS: 1
+        TEST_PHP_EXECUTABLE: /usr/bin/php${{ matrix.php }} # 念のため指定
 
-    - name: Make packaging script executable
+    - name: Run tests (Windows)
+      if: runner.os == 'Windows'
+      run: nmake test
+      env:
+        NO_INTERACTION: 1
+        REPORT_EXIT_STATUS: 1
+        # TEST_PHP_EXECUTABLE は nmake 環境では自動で設定されることが多い
+      shell: cmd
+
+    # ---- Linux (.deb) パッケージングステップ ----
+    - name: Make packaging script executable (Linux)
+      if: runner.os == 'Linux'
       run: chmod +x packaging.sh
 
-    - name: Create DEB package
+    - name: Create DEB package (Linux)
+      if: runner.os == 'Linux'
       run: ./packaging.sh ${{ matrix.php }}
 
-    - name: Determine DEB Artifact Info
+    - name: Determine DEB Artifact Info (Linux)
+      if: runner.os == 'Linux'
       id: deb_artifact_info
       run: |
-        # filename <package>_<version>_<architecture>.deb 
         PACKAGE_NAME=$(grep '^Package:' pkgwork/DEBIAN/control | cut -d' ' -f2)
         VERSION="${{ steps.ext_version.outputs.version }}"
         ARCHITECTURE=$(dpkg --print-architecture)
         DEB_FILENAME="${PACKAGE_NAME}_${VERSION}_${ARCHITECTURE}.deb"
         if [[ ! -f "$DEB_FILENAME" ]]; then
-          echo "Error: Expected DEB file '$DEB_FILENAME' not found in current directory!"
+          echo "Error: Expected DEB file '$DEB_FILENAME' not found!"
           ls -l *.deb || true
           exit 1
         fi
         echo "path=${DEB_FILENAME}" >> $GITHUB_OUTPUT
         echo "name=${DEB_FILENAME}" >> $GITHUB_OUTPUT
         echo "Built DEB artifact: ${DEB_FILENAME}"
+      shell: bash
 
-    - name: Upload DEB artifact
+    - name: Upload DEB artifact (Linux)
+      if: runner.os == 'Linux'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.deb_artifact_info.outputs.name }}
         path: ${{ steps.deb_artifact_info.outputs.path }}
         retention-days: 7
 
-    - name: Upload Release Asset (DEB)
-      if: github.event_name == 'release'
+    - name: Upload Release Asset (DEB) (Linux)
+      if: runner.os == 'Linux' && github.event_name == 'release'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -100,3 +158,47 @@ jobs:
         asset_path: ${{ steps.deb_artifact_info.outputs.path }}
         asset_name: ${{ steps.deb_artifact_info.outputs.name }}
         asset_content_type: application/vnd.debian.binary-package
+
+    # ---- Windows (.dll) 成果物ステップ ----
+    - name: Determine DLL Artifact Info (Windows)
+      if: runner.os == 'Windows'
+      id: dll_artifact_info
+      run: |
+        # ビルド構成を探す (Release か Debug、NTS か TS)
+        # setup-php のデフォルトは Release_NTS かもしれない
+        # PHPバージョンとアーキテクチャを含む可能性のあるパスを検索
+        # 例: x64/Release_NTS/php_rindow_operatorovl.dll
+        # find ./ -name php_rindow_operatorovl.dll -print -quit # Linux find
+        # dir /s /b php_rindow_operatorovl.dll # Windows dir
+        $dllPath = (Get-ChildItem -Recurse -Filter php_rindow_operatorovl.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        if (-not $dllPath) {
+          echo "Error: Built DLL file (php_rindow_operatorovl.dll) not found!"
+          # ビルドディレクトリ構造を表示してみる
+          Get-ChildItem -Recurse | Select-Object FullName -First 100
+          exit 1
+        }
+        $dllName = "php_rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-windows.dll" # PHPバージョン等を付与
+        echo "DLL path found: $dllPath"
+        echo "Artifact name: $dllName"
+        echo "path=$dllPath" >> $env:GITHUB_OUTPUT
+        echo "name=$dllName" >> $env:GITHUB_OUTPUT
+      shell: pwsh # PowerShell を使用してファイル検索
+
+    - name: Upload DLL artifact (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.dll_artifact_info.outputs.name }}
+        path: ${{ steps.dll_artifact_info.outputs.path }}
+        retention-days: 7
+
+    - name: Upload Release Asset (DLL) (Windows)
+      if: runner.os == 'Windows' && github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ steps.dll_artifact_info.outputs.path }}
+        asset_name: ${{ steps.dll_artifact_info.outputs.name }}
+        asset_content_type: application/octet-stream # DLLの標準的なMIMEタイプ
