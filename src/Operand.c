@@ -73,7 +73,7 @@ static zend_bool operator_get_method(
     if(!zend_is_callable_ex(
             &(fci->function_name),
             fci->object,
-            IS_CALLABLE_CHECK_SILENT,
+            0, // IS_CALLABLE_CHECK_SILENT,
             NULL, fcc, NULL)) {
         return FAILURE;
     }
