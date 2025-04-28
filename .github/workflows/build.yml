@@ -55,6 +55,12 @@ jobs:
         make clean
         make
 
+    - name: Run tests
+      run: make test
+      env:
+        NO_INTERACTION: 1
+        REPORT_EXIT_STATUS: 1
+
     - name: Make packaging script executable
       run: chmod +x packaging.sh
 
