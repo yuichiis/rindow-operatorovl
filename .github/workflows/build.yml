@@ -86,12 +86,8 @@ jobs:
     - name: Build extension (Windows)
       if: runner.os == 'Windows'
       run: |
-        # setup-php が phpize.bat へのパスを通してくれるはず
         phpize
-        # configure スクリプトを実行 (Windows用、config.w32 が使われる)
-        # enable オプションが必要な場合は追加 (--enable-rindow_operatorovl は config.w32 内の ARG_ENABLE で処理されるはず)
         configure --enable-rindow_operatorovl=yes # config.w32 の ARG_ENABLE に合わせる
-        # nmake でビルド
         nmake
       shell: cmd # Windows のコマンドプロンプトを使用
 
@@ -164,16 +160,10 @@ jobs:
       if: runner.os == 'Windows'
       id: dll_artifact_info
       run: |
-        # ビルド構成を探す (Release か Debug、NTS か TS)
-        # setup-php のデフォルトは Release_NTS かもしれない
-        # PHPバージョンとアーキテクチャを含む可能性のあるパスを検索
-        # 例: x64/Release_NTS/php_rindow_operatorovl.dll
-        # find ./ -name php_rindow_operatorovl.dll -print -quit # Linux find
-        # dir /s /b php_rindow_operatorovl.dll # Windows dir
+        dir /s /b php_rindow_operatorovl.dll
         $dllPath = (Get-ChildItem -Recurse -Filter php_rindow_operatorovl.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
         if (-not $dllPath) {
           echo "Error: Built DLL file (php_rindow_operatorovl.dll) not found!"
-          # ビルドディレクトリ構造を表示してみる
           Get-ChildItem -Recurse | Select-Object FullName -First 100
           exit 1
         }
@@ -182,7 +172,7 @@ jobs:
         echo "Artifact name: $dllName"
         echo "path=$dllPath" >> $env:GITHUB_OUTPUT
         echo "name=$dllName" >> $env:GITHUB_OUTPUT
-      shell: pwsh # PowerShell を使用してファイル検索
+      shell: pwsh
 
     - name: Upload DLL artifact (Windows)
       if: runner.os == 'Windows'
