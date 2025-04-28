@@ -89,7 +89,7 @@ static zend_bool operator_get_method(
     is_callable = zend_is_callable_ex(
             &(fci->function_name),
             fci->object,
-            callable_flags
+            callable_flags,
             NULL, fcc, NULL);
 
 #if PHP_MAJOR_VERSION == 8 && PHP_MINOR_VERSION >= 2
