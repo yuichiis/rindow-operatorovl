@@ -47,7 +47,7 @@ jobs:
         # env:
         #  PHP_SDK_VS_VERSION: 2019 # Windows で使用する VS のバージョンを指定する場合
       env:
-        # PHP_TS: ${{ matrix.ts }} # スレッドセーフティをマトリックスにする場合
+        PHP_TS: ${{ matrix.ts }} # スレッドセーフティをマトリックスにする場合
         COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # 3. ビルドとパッケージングに必要な依存パッケージをインストール (OS別に分岐)
