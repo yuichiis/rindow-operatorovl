@@ -132,7 +132,7 @@ static zend_object* operator_create_object(zend_class_entry* class_type) /* {{{ 
 /* }}} */
 
 /* {{{ operator handler */
-static int operator_do_operation(zend_uchar opcode, zval *result, zval *op1, zval *op2) 
+static int ZEND_FASTCALL operator_do_operation(zend_uchar opcode, zval *result, zval *op1, zval *op2) 
 {
     zval op1_copy;
     zend_fcall_info fci;
@@ -199,7 +199,7 @@ ALL_OPERATORS(PROC)
     instance_object_handlers.offset    = 0;
     instance_object_handlers.free_obj  = operator_free_object;
     instance_object_handlers.clone_obj = NULL;
-    instance_object_handlers.do_operation = operator_do_operation;
+    instance_object_handlers.do_operation = (zend_object_do_operation_t)operator_do_operation;
 
 }
 /* }}} */

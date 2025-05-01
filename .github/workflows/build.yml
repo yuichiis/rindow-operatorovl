@@ -15,8 +15,14 @@ jobs:
     strategy:
       fail-fast: false # 1つのジョブが失敗しても他のジョブは継続する
       matrix:
-        os: [windows-latest] # ビルドするOS
-        php: ['8.3'] # ビルド対象のPHPバージョン
+        include:
+          - name: Windows
+            os: windows-latest
+            php: '8.3'
+            ts: nts
+            sdkversion: '2.2.0'
+            vsalias: vs16
+            vcvarsopt: '-vcvars_ver=14.2'
         # os: [ubuntu-latest, windows-latest] # ビルドするOS
         # php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
         # Windows ビルドでは NTS (Non Thread Safe) が一般的。必要なら TS も追加
@@ -46,23 +52,63 @@ jobs:
 
     # 3. ビルドとパッケージングに必要な依存パッケージをインストール (OS別に分岐)
     - name: Install build and packaging dependencies (Ubuntu)
-      if: runner.os == 'Linux'
+      if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: |
         sudo apt-get update --allow-releaseinfo-change
         # build-essential: コンパイラ等, dpkg-dev: dpkg-debを含む, fakeroot: root権限なしでファイル所有者を偽装
         sudo apt-get install -y build-essential dpkg-dev fakeroot php${{ matrix.php }}-dev # php-devパッケージも明示的にインストール
 
-    # Windows の場合、setup-php が Visual Studio のビルド環境をある程度設定してくれるはず
-    # 不足があればここに追加 (例: choco install ...)
-    - name: Install build dependencies (Windows)
-      if: runner.os == 'Windows'
+    - name: Download and Setup PHP SDK & Source (Windows)
+      if: ${{ startsWith(matrix.os, 'windows-') }}
+      shell: pwsh
       run: |
-        # 通常、追加のインストールは不要なことが多い
-        echo "Windows build environment setup by setup-php"
+        # Find the latest Visual Studio installation path with VSWhere
+        $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        if ($vsPath) {
+          $vcvarsallPath = Join-Path $vsPath "VC\Auxiliary\Build\vcvarsall.bat"
+          echo "VS_VCVARSALL=$vcvarsallPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Found vcvarsall at: $vcvarsallPath"
+        } else {
+          Write-Error "Visual Studio not found"
+          exit 1
+        }
+        $phpFullVersion = php -r "echo PHP_VERSION;" # Get full version like 8.x.y
+        if ($phpFullVersion) {
+          echo "PHP_FULL_VERSION=$phpFullVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "PHP version : $phpFullVersion"
+        } else {
+          Write-Error "PHP not found"
+          exit 1
+        }
+        $sdkUrl = https://github.com/microsoft/php-sdk-binary-tools/archive/refs/tags/php-sdk-${{ matrix.sdkversion }}.zip
+        $devPackUrl = https://windows.php.net/downloads/releases/php-devel-pack-$phpFullVersion-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip
+        $currentDir = (Get-Location).Path
 
+        echo "PHP Full Version: %PHP_FULL_VERSION%"
+        echo "VS Vars: %VS_VCVARSALL%"
+        
+        # Download and extract SDK
+        echo "Downloading SDK..."
+        Invoke-WebRequest -Uri $sdkUrl -OutFile php-sdk.zip
+        Expand-Archive -Path php-sdk.zip -DestinationPath . -Force
+        Remove-Item php-sdk.zip
+        $sdkPath = Join-Path -Path $currentDir -ChildPath 'php-sdk-binary-tools-php-sdk-${{ matrix.sdkversion }}\msys2\usr\bin'
+        echo "PHP_SDK_PATH=$sdkPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Host "PHP SDK PATH : $sdkPath"
+
+        # Download and extract Dev Pack
+        echo "Downloading DevPack..."
+        Invoke-WebRequest -Uri $devPackUrl -OutFile php-dev-pack.zip
+        Expand-Archive -Path php-dev-pack.zip -DestinationPath . -Force
+        Remove-Item php-dev-pack.zip
+        $devPack = Join-Path -Path $currentDir -ChildPath 'php-$phpFullVersion-devel-${{ matrix.vsalias }}-x64'
+        echo "PHP_DEV_PACK=$devPack" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Host "PHP DEV PACK : $devPack"
+    
     # 4. 拡張機能のバージョンを取得 (php_rindow_operatorovl.hから取得)
     - name: Get Extension version from header
       id: ext_version
+      shell: bash # Windows でも sed を使うために bash を指定
       run: |
         # sed を使用してバージョン番号を抽出
         VERSION=$(sed -n 's/^ *# *define PHP_RINDOW_OPERATOROVL_VERSION *"\([^"]*\)".*/\1/p' php_rindow_operatorovl.h)
@@ -74,31 +120,38 @@ jobs:
         fi
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
         echo "Extracted version: ${VERSION}"
-      shell: bash # Windows でも sed を使うために bash を指定
 
     # 5. PHP拡張をビルド (OS別に分岐)
     - name: Build extension (Linux)
-      if: runner.os == 'Linux'
+      if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: |
         phpize${{ matrix.php }} # phpize もバージョン指定
         ./configure --with-php-config=$(which php-config${{ matrix.php }}) --enable-rindow_operatorovl
         make clean
         make
 
+    # 5. Build extension (Windows) - Now using the prepared SDK environment
     - name: Build extension (Windows)
-      if: runner.os == 'Windows'
+      if: ${{ startsWith(matrix.os, 'windows-') }}
+      shell: cmd
       run: |
-        command -v phpize || { echo "phpize not found in PATH"; exit 1; }
-        command -v configure || { echo "configure not found in PATH"; exit 1; }
-        command -v nmake || { echo "nmake not found in PATH"; exit 1; }      
-        phpize
-        configure --enable-rindow_operatorovl=yes # config.w32 の ARG_ENABLE に合わせる
+        REM Ensure PATH includes MSVC tools (should be set by msvc-dev-cmd action)
+        REM PHP SDK PATH should be set by previous step using GITHUB_PATH or add-path
+        %VS_VCVARSALL% x64 ${{ matrix.vcvarsopt }}
+        PATH %PATH%;%PHP_SDK_PATH%
+
+        %PHP_DEV_PACK%\phpize
+  
+        REM Configure the build (adjust paths and options if needed)
+        REM Ensure config.w32 is used, enable the extension
+        configure --enable-rindow_operatorovl
+  
+        nmake clean
         nmake
-      shell: bash # Windows のコマンドプロンプトを使用
 
     # 6. テストを実行 (OS別に分岐)
     - name: Run tests (Linux)
-      if: runner.os == 'Linux'
+      if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: make test
       env:
         NO_INTERACTION: 1
@@ -106,27 +159,21 @@ jobs:
         TEST_PHP_EXECUTABLE: /usr/bin/php${{ matrix.php }} # 念のため指定
 
     - name: Run tests (Windows)
-      if: runner.os == 'Windows'
+      if: ${{ startsWith(matrix.os, 'windows-') }}
+      shell: cmd
       run: nmake test
       env:
         NO_INTERACTION: 1
         REPORT_EXIT_STATUS: 1
         # TEST_PHP_EXECUTABLE は nmake 環境では自動で設定されることが多い
-      shell: cmd
 
     # ---- Linux (.deb) パッケージングステップ ----
-    - name: Make packaging script executable (Linux)
-      if: runner.os == 'Linux'
-      run: chmod +x packaging.sh
-
-    - name: Create DEB package (Linux)
-      if: runner.os == 'Linux'
-      run: ./packaging.sh ${{ matrix.php }}
-
     - name: Determine DEB Artifact Info (Linux)
-      if: runner.os == 'Linux'
+      if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       id: deb_artifact_info
       run: |
+        chmod +x packaging.sh
+        run: ./packaging.sh ${{ matrix.php }}
         PACKAGE_NAME=$(grep '^Package:' pkgwork/DEBIAN/control | cut -d' ' -f2)
         VERSION="${{ steps.ext_version.outputs.version }}"
         ARCHITECTURE=$(dpkg --print-architecture)
@@ -142,7 +189,7 @@ jobs:
       shell: bash
 
     - name: Upload DEB artifact (Linux)
-      if: runner.os == 'Linux'
+      if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.deb_artifact_info.outputs.name }}
@@ -150,7 +197,7 @@ jobs:
         retention-days: 7
 
     - name: Upload Release Asset (DEB) (Linux)
-      if: runner.os == 'Linux' && github.event_name == 'release'
+      if: ${{ startsWith(matrix.os, 'ubuntu-') && github.event_name == 'release' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -162,8 +209,9 @@ jobs:
 
     # ---- Windows (.dll) 成果物ステップ ----
     - name: Determine DLL Artifact Info (Windows)
-      if: runner.os == 'Windows'
+      if: ${{ startsWith(matrix.os, 'windows-') }}
       id: dll_artifact_info
+      shell: pwsh
       run: |
         dir /s /b php_rindow_operatorovl.dll
         $dllPath = (Get-ChildItem -Recurse -Filter php_rindow_operatorovl.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
@@ -177,10 +225,9 @@ jobs:
         echo "Artifact name: $dllName"
         echo "path=$dllPath" >> $env:GITHUB_OUTPUT
         echo "name=$dllName" >> $env:GITHUB_OUTPUT
-      shell: pwsh
 
     - name: Upload DLL artifact (Windows)
-      if: runner.os == 'Windows'
+      if: ${{ startsWith(matrix.os, 'windows-') }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.dll_artifact_info.outputs.name }}
@@ -188,7 +235,7 @@ jobs:
         retention-days: 7
 
     - name: Upload Release Asset (DLL) (Windows)
-      if: runner.os == 'Windows' && github.event_name == 'release'
+      if: ${{ startsWith(matrix.os, 'windows-') && github.event_name == 'release' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
