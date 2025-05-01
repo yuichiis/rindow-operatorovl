@@ -145,7 +145,7 @@ jobs:
   
         REM Configure the build (adjust paths and options if needed)
         REM Ensure config.w32 is used, enable the extension
-        call configure --enable-rindow_operatorovl --with-prefix=C:\tools\php\php.exe
+        call configure --enable-rindow_operatorovl --with-prefix=C:\tools\php
   
         nmake clean
         nmake
@@ -165,7 +165,6 @@ jobs:
       run: |
         call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
-        C:\tools\php\php.exe -v
         nmake test
       env:
         NO_INTERACTION: 1
