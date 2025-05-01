@@ -80,8 +80,8 @@ jobs:
           Write-Error "PHP not found"
           exit 1
         }
-        $sdkUrl = https://github.com/microsoft/php-sdk-binary-tools/archive/refs/tags/php-sdk-${{ matrix.sdkversion }}.zip
-        $devPackUrl = https://windows.php.net/downloads/releases/php-devel-pack-$phpFullVersion-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip
+        $sdkUrl = "https://github.com/microsoft/php-sdk-binary-tools/archive/refs/tags/php-sdk-${{ matrix.sdkversion }}.zip"
+        $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-$phpFullVersion-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip"
         $currentDir = (Get-Location).Path
 
         echo "PHP Full Version: %PHP_FULL_VERSION%"
