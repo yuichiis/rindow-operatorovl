@@ -101,7 +101,7 @@ jobs:
         Invoke-WebRequest -Uri $devPackUrl -OutFile php-dev-pack.zip
         Expand-Archive -Path php-dev-pack.zip -DestinationPath . -Force
         Remove-Item php-dev-pack.zip
-        $devPackFolder = "php-${phpFullVersion-devel}-${{ matrix.vsalias }}-x64"
+        $devPackFolder = "php-${phpFullVersion}-devel-${{ matrix.vsalias }}-x64"
         $devPack = Join-Path -Path $currentDir -ChildPath $devPackFolder
         echo "PHP_DEV_PACK=$devPack" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         Write-Host "PHP DEV PACK : $devPack"
