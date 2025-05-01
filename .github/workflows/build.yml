@@ -141,8 +141,6 @@ jobs:
         call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
 
-        dir
-        dir %PHP_DEV_PACK%
         call "%PHP_DEV_PACK%\phpize"
   
         REM Configure the build (adjust paths and options if needed)
@@ -164,7 +162,10 @@ jobs:
     - name: Run tests (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
       shell: cmd
-      run: nmake test
+      run: |
+        call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
+        PATH %PATH%;%PHP_SDK_PATH%
+        nmake test
       env:
         NO_INTERACTION: 1
         REPORT_EXIT_STATUS: 1
