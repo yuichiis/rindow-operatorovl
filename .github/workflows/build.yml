@@ -140,7 +140,7 @@ jobs:
         %VS_VCVARSALL% x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
 
-        %PHP_DEV_PACK%\phpize
+        "%PHP_DEV_PACK%\phpize"
   
         REM Configure the build (adjust paths and options if needed)
         REM Ensure config.w32 is used, enable the extension
