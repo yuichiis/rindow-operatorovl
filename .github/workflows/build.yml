@@ -165,6 +165,7 @@ jobs:
       run: |
         call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
+        C:\php\php.exe -v
         nmake test
       env:
         NO_INTERACTION: 1
