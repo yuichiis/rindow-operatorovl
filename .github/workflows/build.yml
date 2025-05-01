@@ -47,7 +47,7 @@ jobs:
         # env:
         #  PHP_SDK_VS_VERSION: 2019 # Windows で使用する VS のバージョンを指定する場合
       env:
-        PHP_TS: ${{ matrix.ts }} # スレッドセーフティをマトリックスにする場合
+        phpts: ${{ matrix.ts }} # スレッドセーフティをマトリックスにする場合
         COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # 3. ビルドとパッケージングに必要な依存パッケージをインストール (OS別に分岐)
@@ -145,7 +145,7 @@ jobs:
   
         REM Configure the build (adjust paths and options if needed)
         REM Ensure config.w32 is used, enable the extension
-        call configure --enable-rindow_operatorovl
+        call configure --enable-rindow_operatorovl --with-prefix=C:\tools\php\php.exe
   
         nmake clean
         nmake
@@ -165,7 +165,7 @@ jobs:
       run: |
         call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
-        C:\php\php.exe -v
+        C:\tools\php\php.exe -v
         nmake test
       env:
         NO_INTERACTION: 1
