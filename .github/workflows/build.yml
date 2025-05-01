@@ -164,6 +164,7 @@ jobs:
       run: |
         call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
+        php -v
         nmake test
       env:
         NO_INTERACTION: 1
@@ -223,12 +224,12 @@ jobs:
           Get-ChildItem -Recurse | Select-Object FullName -First 100
           exit 1
         }
-        $zipName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-${{ matrix.ts }}-x64.zip" # PHPバージョン等を付与
+        $zipName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64.zip" # PHPバージョン等を付与
         Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
         echo "DLL path found: $dllPath"
         echo "Artifact name: $zipName"
-        echo "path=$dllPath" >> $env:GITHUB_OUTPUT
-        echo "name=$dllName" >> $env:GITHUB_OUTPUT
+        echo "path=$zipName" >> $env:GITHUB_OUTPUT
+        echo "name=$zipName" >> $env:GITHUB_OUTPUT
 
     - name: Upload DLL artifact (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
