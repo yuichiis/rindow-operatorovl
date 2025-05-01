@@ -84,8 +84,8 @@ jobs:
         $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-${phpFullVersion}-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip"
         $currentDir = (Get-Location).Path
 
-        echo "PHP Full Version: $phpFullVersion"
-        echo "VS Vars: $vcvarsallPath"
+        Write-Host "SDK URL: $sdkUrl"
+        Write-Host "Dev Pack Url: $devPackUrl"
         
         # Download and extract SDK
         echo "Downloading SDK..."
@@ -101,7 +101,7 @@ jobs:
         Invoke-WebRequest -Uri $devPackUrl -OutFile php-dev-pack.zip
         Expand-Archive -Path php-dev-pack.zip -DestinationPath . -Force
         Remove-Item php-dev-pack.zip
-        $devPack = Join-Path -Path $currentDir -ChildPath 'php-$phpFullVersion-devel-${{ matrix.vsalias }}-x64'
+        $devPack = Join-Path -Path $currentDir -ChildPath "php-${phpFullVersion-devel}-${{ matrix.vsalias }}-x64"
         echo "PHP_DEV_PACK=$devPack" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         Write-Host "PHP DEV PACK : $devPack"
     
