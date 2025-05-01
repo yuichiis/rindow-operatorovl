@@ -143,11 +143,11 @@ jobs:
 
         dir
         dir %PHP_DEV_PACK%
-        "%PHP_DEV_PACK%\phpize"
+        call "%PHP_DEV_PACK%\phpize"
   
         REM Configure the build (adjust paths and options if needed)
         REM Ensure config.w32 is used, enable the extension
-        configure --enable-rindow_operatorovl
+        call configure --enable-rindow_operatorovl
   
         nmake clean
         nmake
