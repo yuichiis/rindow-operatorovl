@@ -217,7 +217,7 @@ jobs:
       id: dll_artifact_info
       shell: pwsh
       run: |
-        dir /s /b php_rindow_operatorovl.dll
+        dir -Path C:\ -Filter php_rindow_operatorovl.dll -Recurse -File
         $dllPath = (Get-ChildItem -Recurse -Filter php_rindow_operatorovl.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
         if (-not $dllPath) {
           echo "Error: Built DLL file (php_rindow_operatorovl.dll) not found!"
