@@ -81,11 +81,11 @@ jobs:
           exit 1
         }
         $sdkUrl = "https://github.com/microsoft/php-sdk-binary-tools/archive/refs/tags/php-sdk-${{ matrix.sdkversion }}.zip"
-        $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-$phpFullVersion-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip"
+        $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-${phpFullVersion}-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip"
         $currentDir = (Get-Location).Path
 
-        echo "PHP Full Version: %PHP_FULL_VERSION%"
-        echo "VS Vars: %VS_VCVARSALL%"
+        echo "PHP Full Version: $phpFullVersion"
+        echo "VS Vars: $vcvarsallPath"
         
         # Download and extract SDK
         echo "Downloading SDK..."
