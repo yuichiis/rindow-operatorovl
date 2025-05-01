@@ -141,6 +141,8 @@ jobs:
         "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
 
+        dir
+        dir %PHP_DEV_PACK%
         "%PHP_DEV_PACK%\phpize"
   
         REM Configure the build (adjust paths and options if needed)
