@@ -131,7 +131,6 @@ jobs:
         make clean
         make
 
-    # 5. Build extension (Windows) - Now using the prepared SDK environment
     - name: Build extension (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
       shell: cmd
@@ -224,9 +223,10 @@ jobs:
           Get-ChildItem -Recurse | Select-Object FullName -First 100
           exit 1
         }
-        $dllName = "php_rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-windows.dll" # PHPバージョン等を付与
+        $zipName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-${{ matrix.ts }}-x64.zip" # PHPバージョン等を付与
+        Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
         echo "DLL path found: $dllPath"
-        echo "Artifact name: $dllName"
+        echo "Artifact name: $zipName"
         echo "path=$dllPath" >> $env:GITHUB_OUTPUT
         echo "name=$dllName" >> $env:GITHUB_OUTPUT
 
