@@ -138,7 +138,7 @@ jobs:
       run: |
         REM Ensure PATH includes MSVC tools (should be set by msvc-dev-cmd action)
         REM PHP SDK PATH should be set by previous step using GITHUB_PATH or add-path
-        "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
+        call "%VS_VCVARSALL%" x64 ${{ matrix.vcvarsopt }}
         PATH %PATH%;%PHP_SDK_PATH%
 
         dir
