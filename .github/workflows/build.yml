@@ -16,62 +16,78 @@ jobs:
       fail-fast: false # 1つのジョブが失敗しても他のジョブは継続する
       matrix:
         include:
-          - name: Windows
-            os: windows-latest
-            php: '7.4'
+          - name: Linux
+            os: ubuntu-latest
+            php: '8.1'
             ts: nts
-            sdkversion: '2.2.0'
-            vsalias: vc15
-            vcvarsopt: '-vcvars_ver=14.1'
-          - name: Windows
+          - name: Linux
+            os: ubuntu-latest
+            php: '8.2'
+            ts: nts
+          - name: Linux
+            os: ubuntu-latest
+            php: '8.3'
+            ts: nts
+          - name: Linux
+            os: ubuntu-latest
+            php: '8.4'
+            ts: nts
+          - name: Linux
             os: windows-latest
-            php: '7.4'
-            ts: ts
-            sdkversion: '2.2.0'
-            vsalias: vc15
-            vcvarsopt: '-vcvars_ver=14.1'
-          - name: Windows
-            os: windows-latest
-            php: '8.0'
+            php: '8.1'
             ts: nts
             sdkversion: '2.2.0'
             vsalias: vs16
             vcvarsopt: '-vcvars_ver=14.2'
           - name: Windows
             os: windows-latest
-            php: '8.0'
+            php: '8.1'
             ts: ts
             sdkversion: '2.2.0'
             vsalias: vs16
             vcvarsopt: '-vcvars_ver=14.2'
-          #- name: Windows
-          #  os: windows-latest
-          #  php: '8.3'
-          #  ts: nts
-          #  sdkversion: '2.2.0'
-          #  vsalias: vs16
-          #  vcvarsopt: '-vcvars_ver=14.2'
-          #- name: Windows
-          #  os: windows-latest
-          #  php: '8.3'
-          #  ts: ts
-          #  sdkversion: '2.2.0'
-          #  vsalias: vs16
-          #  vcvarsopt: '-vcvars_ver=14.2'
-          #- name: Windows
-          #  os: windows-latest
-          #  php: '8.4'
-          #  ts: nts
-          #  sdkversion: '2.2.0'
-          #  vsalias: vs17
-          #  vcvarsopt: ''
-          #- name: Windows
-          #  os: windows-latest
-          #  php: '8.4'
-          #  ts: ts
-          #  sdkversion: '2.2.0'
-          #  vsalias: vs17
-          #  vcvarsopt: ''
+          - name: Windows
+            os: windows-latest
+            php: '8.2'
+            ts: nts
+            sdkversion: '2.2.0'
+            vsalias: vs16
+            vcvarsopt: '-vcvars_ver=14.2'
+          - name: Windows
+            os: windows-latest
+            php: '8.2'
+            ts: ts
+            sdkversion: '2.2.0'
+            vsalias: vs16
+            vcvarsopt: '-vcvars_ver=14.2'
+          - name: Windows
+            os: windows-latest
+            php: '8.3'
+            ts: nts
+            sdkversion: '2.2.0'
+            vsalias: vs16
+            vcvarsopt: '-vcvars_ver=14.2'
+          - name: Windows
+            os: windows-latest
+            php: '8.3'
+            ts: ts
+            sdkversion: '2.2.0'
+            vsalias: vs16
+            vcvarsopt: '-vcvars_ver=14.2'
+          - name: Windows
+            os: windows-latest
+            php: '8.4'
+            ts: nts
+            sdkversion: '2.2.0'
+            vsalias: vs17
+            vcvarsopt: ''
+          - name: Windows
+            os: windows-latest
+            php: '8.4'
+            ts: ts
+            sdkversion: '2.2.0'
+            vsalias: vs17
+            vcvarsopt: ''
         # os: [ubuntu-latest, windows-latest] # ビルドするOS
         # php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
         # Windows ビルドでは NTS (Non Thread Safe) が一般的。必要なら TS も追加
