@@ -8,5 +8,5 @@ if (PHP_RINDOW_OPERATOROVL != 'no') {
   	";
 
 	EXTENSION('rindow_operatorovl', 'rindow_operatorovl.c', null, PHP_RINDOW_OPERATOROVL_CFLAGS);
-	ADD_SOURCES(configure_module_dirname + "/src", "Operand.c", "rindow_operatorovl");
+	ADD_SOURCES(configure_module_dirname + "/src", "Operatable.c", "rindow_operatorovl");
 }
