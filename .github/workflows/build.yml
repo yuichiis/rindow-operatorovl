@@ -89,7 +89,7 @@ jobs:
         }
         if ("${{ matrix.ts }}" -eq "nts") {
           $tsUrl = "-nts"
-        else {
+        } else {
           $tsUrl = ""
         }
         $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-${phpFullVersion}${tsUrl}-Win32-${{ matrix.vsalias }}-x64.zip"
