@@ -348,13 +348,12 @@ jobs:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: ${{ steps.dll_artifact_info.outputs.path }}
         asset_name: ${{ steps.dll_artifact_info.outputs.name }}
-        asset_content_type: application/octet-stream
+        asset_content_type: application/zip
 
     - name: Determine SO Artifact Info (macOS)
       if: ${{ startsWith(matrix.os, 'macos-') }}
       id: so_artifact_info
       run: |
-        # ビルドされた .so ファイルを探す (通常 modules/ ディレクトリにある)
         SO_FILE=$(find . -path '*/modules/*.so' -name 'rindow_operatorovl.so' | head -n 1)
         if [[ -z "$SO_FILE" ]]; then
           echo "Error: Built SO file (rindow_operatorovl.so) not found!"
@@ -362,12 +361,9 @@ jobs:
           find . -name '*.so' -ls || true
           exit 1
         fi
-        # アーキテクチャを取得 (x86_64 or arm64)
         ARCH=$(uname -m)
         VERSION="${{ steps.ext_version.outputs.version }}"
-        # PHPバージョン、拡張バージョン、OS、アーキテクチャを含むファイル名
         ZIP_FILENAME="rindow_operatorovl-php${{ matrix.php }}-${VERSION}-macos-${ARCH}.zip"
-        # zipコマンドでアーカイブ (-j でディレクトリ構造を除外)
         zip -j "$ZIP_FILENAME" "$SO_FILE"
         echo "SO file found: $SO_FILE"
         echo "Artifact name: $ZIP_FILENAME"
@@ -392,5 +388,5 @@ jobs:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: ${{ steps.so_artifact_info.outputs.path }}
         asset_name: ${{ steps.so_artifact_info.outputs.name }}
-        asset_content_type: application/zip # zipファイルなので
+        asset_content_type: application/zip
 
