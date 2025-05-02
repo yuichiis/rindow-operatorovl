@@ -10,9 +10,9 @@ By implementing the method corresponding to the operator in the object class, yo
 Requirements
 ============
 
-- PHP8.0 and PHP8.1
+- PHP8.0 or later
 - Windows 10/Visual Studio 2019 or later
-- Ubuntu 20.04 LTS or later
+- Ubuntu 22.04 LTS or later
 
 Note
 ====
@@ -35,14 +35,35 @@ Due to the PHP function, assignment operators such as "++" are replaced with nor
 - BW_NOT(~),        __bw_not
 - BOOL_XOR(xor),    __bool_xor
 
+How to install pre-build binaries
+=================================
+### Download from github
+
+Download binary for your environment from Release page.
+
+- https://github.com/rindow/rindow-operatorovl/releases
+
+### Install for Linux
+
+Install the deb file with the apt command
+```shell
+$ sudo apt install ./rindow-operatorovl-phpX.X_X.X.X_amd64.deb
+```
+
+### Install for Windows
+
+- Extract the zip file
+- Copy DLL file to the PHP extension directory.
+- Add the "extension=rindow_operatorovl" entry to php.ini
+
 How to build from source code on Windows
 ========================================
 
-### Install VS16 for windows
-Developing PHP extensions from php8.0.
+### Install Visual Studio for windows
+Developing PHP extensions from php8.0 or later.
 
 - Install Microsoft Visual Studio 2019 or later installer
-
+- If you are building a PHP Extension for PHP8.0 through PHP8.3 with Visual Studio 2022, install the MSVC v142 - VS 2019 C++ build Tool option.
 
 ### php sdk and devel-pack binaries for windows
 
@@ -52,14 +73,22 @@ Developing PHP extensions from php8.0.
 - Download target dev-pack from https://windows.php.net/downloads/releases/
 - Extract to /path/to/php-devel-pack-x.x.x-Win32-Vxxx-x64/
 
-### Start php-sdk for target PHP version
+### Setup environment variables to build
 
 Open Visual Studio Command Prompt for VS for the target PHP version(see stepbystepbuild.)
 
+Set the Visual Studio environment variables.
 ```shell
 C:\visual\studio\path>vcvars64
-C:\tmp>cd c:\php-sdk
-C:\php-sdk>phpsdk-vs16-x64.bat
+```
+If you are using the "MSVC v142 - VS 2019 C++ build Tool option", run it with the option.
+```shell
+C:\visual\studio\path>vcvars64 -vcvars_ver=14.2
+```
+
+Set PHP-SDK execute path.
+```shell
+C:\tmp>PATH %PATH%;C:\php-sdk\msys2\usr\bin
 ```
 
 ### Build
@@ -75,7 +104,7 @@ $ nmake test
 
 ### Install from built directory
 
-- Copy the php extension binary(.dll) to the php/ext directory from here/arch/Releases_TS/php_rindow_operatorovl.dll
+- Copy the php extension binary(.dll) to the php/ext directory from here/arch/Releases_XX/php_rindow_operatorovl.dll
 - Add the "extension=php_rindow_operatorovl" entry to php.ini
 
 
