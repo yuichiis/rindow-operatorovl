@@ -10,9 +10,10 @@ By implementing the method corresponding to the operator in the object class, yo
 Requirements
 ============
 
-- PHP8.0 or later
+- PHP8.1 or later
 - Windows 10/Visual Studio 2019 or later
 - Ubuntu 22.04 LTS or later
+- macOS Intel/Apple Silicon
 
 Note
 ====
@@ -55,6 +56,13 @@ $ sudo apt install ./rindow-operatorovl-phpX.X_X.X.X_amd64.deb
 - Extract the zip file
 - Copy DLL file to the PHP extension directory.
 - Add the "extension=rindow_operatorovl" entry to php.ini
+
+### Install for macOS
+
+- Extract the zip file
+- Copy .so file to the PHP extension directory.
+- Add the "extension=rindow_operatorovl" entry to php.ini
+
 
 How to build from source code on Windows
 ========================================
