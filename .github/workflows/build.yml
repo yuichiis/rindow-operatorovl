@@ -246,8 +246,7 @@ jobs:
       if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       id: deb_artifact_info
       run: |
-        chmod +x packaging.sh
-        run: ./packaging.sh ${{ matrix.php }}
+        sh ./packaging.sh ${{ matrix.php }}
         PACKAGE_NAME=$(grep '^Package:' pkgwork/DEBIAN/control | cut -d' ' -f2)
         VERSION="${{ steps.ext_version.outputs.version }}"
         ARCHITECTURE=$(dpkg --print-architecture)
