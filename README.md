@@ -75,11 +75,12 @@ Developing PHP extensions from php8.0 or later.
 
 ### php sdk and devel-pack binaries for windows
 
-- If you want to build extensions for PHP 8.0, You have to use php-sdk release 2.2.0. It supports vs16.
-- For PHP 8.0, Download the php-sdk from https://github.com/microsoft/php-sdk-binary-tools/releases/tag/php-sdk-2.2.0
-- Extract to c:\php-sdk
-- Download target dev-pack from https://windows.php.net/downloads/releases/
-- Extract to /path/to/php-devel-pack-x.x.x-Win32-Vxxx-x64/
+- When building extensions for PHP 8.0 or later, please use php-sdk release 2.2.0 which supports vs16 or later.
+- Download the php-sdk from [https://github.com/microsoft/php-sdk-binary-tools/releases/tag/php-sdk-2.2.0](https://github.com/microsoft/php-sdk-binary-tools/releases/tag/php-sdk-2.2.0).
+- Extract it to c:\php-sdk.
+- Download the target dev-pack from [https://windows.php.net/downloads/releases/](https://windows.php.net/downloads/releases/).
+- Extract it to /path/to/php-devel-pack-x.x.x-Win32-Vxxx-x64/.
+
 
 ### Setup environment variables to build
 
