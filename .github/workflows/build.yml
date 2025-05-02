@@ -23,6 +23,13 @@ jobs:
             sdkversion: '2.2.0'
             vsalias: vs16
             vcvarsopt: '-vcvars_ver=14.2'
+          - name: Windows
+            os: windows-latest
+            php: '8.3'
+            ts: ts
+            sdkversion: '2.2.0'
+            vsalias: vs16
+            vcvarsopt: '-vcvars_ver=14.2'
         # os: [ubuntu-latest, windows-latest] # ビルドするOS
         # php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
         # Windows ビルドでは NTS (Non Thread Safe) が一般的。必要なら TS も追加
@@ -80,8 +87,13 @@ jobs:
           Write-Error "PHP not found"
           exit 1
         }
+        if ("${{ matrix.ts }}" -eq "nts") {
+          $tsUrl = "-nts"
+        else {
+          $tsUrl = ""
+        }
+        $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-${phpFullVersion}${tsUrl}-Win32-${{ matrix.vsalias }}-x64.zip"
         $sdkUrl = "https://github.com/microsoft/php-sdk-binary-tools/archive/refs/tags/php-sdk-${{ matrix.sdkversion }}.zip"
-        $devPackUrl = "https://windows.php.net/downloads/releases/php-devel-pack-${phpFullVersion}-${{ matrix.ts }}-Win32-${{ matrix.vsalias }}-x64.zip"
         $currentDir = (Get-Location).Path
 
         Write-Host "SDK URL: $sdkUrl"
