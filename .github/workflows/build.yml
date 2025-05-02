@@ -224,12 +224,12 @@ jobs:
           Get-ChildItem -Recurse | Select-Object FullName -First 100
           exit 1
         }
-        $ArtiName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64" # PHPバージョン等を付与
-        Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
+        $artiName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64" # PHPバージョン等を付与
+        # Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
         echo "DLL path found: $dllPath"
-        echo "Artifact name: $ArtiName"
+        echo "Artifact name: $artiName"
         echo "path=$zipName" >> $env:GITHUB_OUTPUT
-        echo "name=$ArtiName" >> $env:GITHUB_OUTPUT
+        echo "name=$artiName" >> $env:GITHUB_OUTPUT
 
     - name: Upload DLL artifact (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
