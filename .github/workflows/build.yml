@@ -240,7 +240,7 @@ jobs:
         Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
         echo "DLL path found: $dllPath"
         echo "Artifact name: $zipName"
-        echo "path=$zipPath" >> $env:GITHUB_OUTPUT
+        echo "path=$zipName" >> $env:GITHUB_OUTPUT
         echo "name=$zipName" >> $env:GITHUB_OUTPUT
 
     - name: Upload DLL artifact (Windows)
