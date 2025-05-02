@@ -10,118 +10,109 @@ on:
 
 jobs:
   build:
-    # Linux と Windows のマトリックス定義
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false # 1つのジョブが失敗しても他のジョブは継続する
+      fail-fast: false
       matrix:
         include:
-          - name: Linux
-            os: ubuntu-latest
-            php: '8.1'
-            ts: nts
-          - name: Linux
-            os: ubuntu-latest
-            php: '8.2'
-            ts: nts
-          - name: Linux
-            os: ubuntu-latest
-            php: '8.3'
-            ts: nts
-          - name: Linux
-            os: ubuntu-latest
+          #- name: Linux
+          #  os: ubuntu-latest
+          #  php: '8.1'
+          #  ts: nts
+          #- name: Linux
+          #  os: ubuntu-latest
+          #  php: '8.2'
+          #  ts: nts
+          #- name: Linux
+          #  os: ubuntu-latest
+          #  php: '8.3'
+          #  ts: nts
+          #- name: Linux
+          #  os: ubuntu-latest
+          #  php: '8.4'
+          #  ts: nts
+          #- name: Linux
+          #  os: windows-latest
+          #  php: '8.1'
+          #  ts: nts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs16
+          #  vcvarsopt: '-vcvars_ver=14.2'
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.1'
+          #  ts: ts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs16
+          #  vcvarsopt: '-vcvars_ver=14.2'
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.2'
+          #  ts: nts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs16
+          #  vcvarsopt: '-vcvars_ver=14.2'
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.2'
+          #  ts: ts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs16
+          #  vcvarsopt: '-vcvars_ver=14.2'
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.3'
+          #  ts: nts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs16
+          #  vcvarsopt: '-vcvars_ver=14.2'
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.3'
+          #  ts: ts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs16
+          #  vcvarsopt: '-vcvars_ver=14.2'
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.4'
+          #  ts: nts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs17
+          #  vcvarsopt: ''
+          #- name: Windows
+          #  os: windows-latest
+          #  php: '8.4'
+          #  ts: ts
+          #  sdkversion: '2.2.0'
+          #  vsalias: vs17
+          #  vcvarsopt: ''
+
+          - name: macOS
+            os: macos-latest
             php: '8.4'
             ts: nts
-          - name: Linux
-            os: windows-latest
-            php: '8.1'
-            ts: nts
-            sdkversion: '2.2.0'
-            vsalias: vs16
-            vcvarsopt: '-vcvars_ver=14.2'
-          - name: Windows
-            os: windows-latest
-            php: '8.1'
-            ts: ts
-            sdkversion: '2.2.0'
-            vsalias: vs16
-            vcvarsopt: '-vcvars_ver=14.2'
-          - name: Windows
-            os: windows-latest
-            php: '8.2'
-            ts: nts
-            sdkversion: '2.2.0'
-            vsalias: vs16
-            vcvarsopt: '-vcvars_ver=14.2'
-          - name: Windows
-            os: windows-latest
-            php: '8.2'
-            ts: ts
-            sdkversion: '2.2.0'
-            vsalias: vs16
-            vcvarsopt: '-vcvars_ver=14.2'
-          - name: Windows
-            os: windows-latest
-            php: '8.3'
-            ts: nts
-            sdkversion: '2.2.0'
-            vsalias: vs16
-            vcvarsopt: '-vcvars_ver=14.2'
-          - name: Windows
-            os: windows-latest
-            php: '8.3'
-            ts: ts
-            sdkversion: '2.2.0'
-            vsalias: vs16
-            vcvarsopt: '-vcvars_ver=14.2'
-          - name: Windows
-            os: windows-latest
-            php: '8.4'
-            ts: nts
-            sdkversion: '2.2.0'
-            vsalias: vs17
-            vcvarsopt: ''
-          - name: Windows
-            os: windows-latest
-            php: '8.4'
-            ts: ts
-            sdkversion: '2.2.0'
-            vsalias: vs17
-            vcvarsopt: ''
-        # os: [ubuntu-latest, windows-latest] # ビルドするOS
-        # php: ['8.1', '8.2', '8.3'] # ビルド対象のPHPバージョン
-        # Windows ビルドでは NTS (Non Thread Safe) が一般的。必要なら TS も追加
-        # ts: [nts] # 必要なら [nts, ts]
 
     name: Build on ${{ matrix.os }} for PHP ${{ matrix.php }}-${{ matrix.ts }}
 
     steps:
-    # 1. リポジトリのコードをチェックアウト
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. 指定したPHPバージョンをセットアップ
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-        extensions: none # この拡張自体をビルドするため、他の拡張は不要
-        # tools: phpize, php-config # Linuxでは有用だがWindowsでは不要
-        # ini-values: opcache.enable=0 # 必要に応じてINI設定を追加
-        # coverage: none
-        # env:
-        #  PHP_SDK_VS_VERSION: 2019 # Windows で使用する VS のバージョンを指定する場合
+        extensions: none
       env:
-        phpts: ${{ matrix.ts }} # スレッドセーフティをマトリックスにする場合
+        phpts: ${{ matrix.ts }}
         COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # 3. ビルドとパッケージングに必要な依存パッケージをインストール (OS別に分岐)
     - name: Install build and packaging dependencies (Ubuntu)
       if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: |
         sudo apt-get update --allow-releaseinfo-change
-        # build-essential: コンパイラ等, dpkg-dev: dpkg-debを含む, fakeroot: root権限なしでファイル所有者を偽装
-        sudo apt-get install -y build-essential dpkg-dev fakeroot php${{ matrix.php }}-dev # php-devパッケージも明示的にインストール
+        sudo apt-get install -y build-essential dpkg-dev fakeroot php${{ matrix.php }}-dev
 
     - name: Download and Setup PHP SDK & Source (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
@@ -176,14 +167,16 @@ jobs:
         echo "PHP_DEV_PACK=$devPack" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         Write-Host "PHP DEV PACK : $devPack"
     
-    # 4. 拡張機能のバージョンを取得 (php_rindow_operatorovl.hから取得)
+    - name: Install build dependencies (macOS)
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      run: |
+        brew install autoconf automake libtool pkg-config || echo "Brew install failed but proceeding..."
+        
     - name: Get Extension version from header
       id: ext_version
-      shell: bash # Windows でも sed を使うために bash を指定
+      shell: bash
       run: |
-        # sed を使用してバージョン番号を抽出
         VERSION=$(sed -n 's/^ *# *define PHP_RINDOW_OPERATOROVL_VERSION *"\([^"]*\)".*/\1/p' php_rindow_operatorovl.h)
-        # 念のためバージョンが取得できたかチェック
         if [[ -z "$VERSION" ]]; then
           echo "Error: Could not extract version from php_rindow_operatorovl.h"
           cat php_rindow_operatorovl.h || true
@@ -192,11 +185,10 @@ jobs:
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
         echo "Extracted version: ${VERSION}"
 
-    # 5. PHP拡張をビルド (OS別に分岐)
     - name: Build extension (Linux)
       if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: |
-        phpize${{ matrix.php }} # phpize もバージョン指定
+        phpize${{ matrix.php }}
         ./configure --with-php-config=$(which php-config${{ matrix.php }}) --enable-rindow_operatorovl
         make clean
         make
@@ -219,14 +211,21 @@ jobs:
         nmake clean
         nmake
 
-    # 6. テストを実行 (OS別に分岐)
+    - name: Build extension (macOS)
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      run: |
+        phpize
+        ./configure --with-php-config=$(which php-config) --enable-rindow_operatorovl
+        make clean
+        make
+
     - name: Run tests (Linux)
       if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: make test
       env:
         NO_INTERACTION: 1
         REPORT_EXIT_STATUS: 1
-        TEST_PHP_EXECUTABLE: /usr/bin/php${{ matrix.php }} # 念のため指定
+        TEST_PHP_EXECUTABLE: /usr/bin/php${{ matrix.php }}
 
     - name: Run tests (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
@@ -239,9 +238,15 @@ jobs:
       env:
         NO_INTERACTION: 1
         REPORT_EXIT_STATUS: 1
-        # TEST_PHP_EXECUTABLE は nmake 環境では自動で設定されることが多い
 
-    # ---- Linux (.deb) パッケージングステップ ----
+    - name: Run tests (macOS)
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      run: make test
+      env:
+        NO_INTERACTION: 1
+        REPORT_EXIT_STATUS: 1
+        TEST_PHP_EXECUTABLE: $(which php)
+
     - name: Determine DEB Artifact Info (Linux)
       if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       id: deb_artifact_info
@@ -280,7 +285,6 @@ jobs:
         asset_name: ${{ steps.deb_artifact_info.outputs.name }}
         asset_content_type: application/vnd.debian.binary-package
 
-    # ---- Windows (.dll) 成果物ステップ ----
     - name: Determine DLL Artifact Info (Windows)
       if: ${{ startsWith(matrix.os, 'windows-') }}
       id: dll_artifact_info
@@ -293,7 +297,7 @@ jobs:
           Get-ChildItem -Recurse | Select-Object FullName -First 100
           exit 1
         }
-        $zipName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64.zip" # PHPバージョン等を付与
+        $zipName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64.zip"
         Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
         echo "DLL path found: $dllPath"
         echo "Artifact name: $zipName"
@@ -317,4 +321,49 @@ jobs:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: ${{ steps.dll_artifact_info.outputs.path }}
         asset_name: ${{ steps.dll_artifact_info.outputs.name }}
-        asset_content_type: application/octet-stream # DLLの標準的なMIMEタイプ
+        asset_content_type: application/octet-stream
+
+    - name: Determine SO Artifact Info (macOS)
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      id: so_artifact_info
+      run: |
+        # ビルドされた .so ファイルを探す (通常 modules/ ディレクトリにある)
+        SO_FILE=$(find . -path '*/modules/*.so' -name 'rindow_operatorovl.so' | head -n 1)
+        if [[ -z "$SO_FILE" ]]; then
+          echo "Error: Built SO file (rindow_operatorovl.so) not found!"
+          echo "Searching for .so files..."
+          find . -name '*.so' -ls || true
+          exit 1
+        fi
+        # アーキテクチャを取得 (x86_64 or arm64)
+        ARCH=$(uname -m)
+        VERSION="${{ steps.ext_version.outputs.version }}"
+        # PHPバージョン、拡張バージョン、OS、アーキテクチャを含むファイル名
+        ZIP_FILENAME="rindow_operatorovl-php${{ matrix.php }}-${VERSION}-macos-${ARCH}.zip"
+        # zipコマンドでアーカイブ (-j でディレクトリ構造を除外)
+        zip -j "$ZIP_FILENAME" "$SO_FILE"
+        echo "SO file found: $SO_FILE"
+        echo "Artifact name: $ZIP_FILENAME"
+        echo "path=${ZIP_FILENAME}" >> $GITHUB_OUTPUT
+        echo "name=${ZIP_FILENAME}" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Upload SO artifact (macOS)
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.so_artifact_info.outputs.name }}
+        path: ${{ steps.so_artifact_info.outputs.path }}
+        retention-days: 7
+
+    - name: Upload Release Asset (SO) (macOS)
+      if: ${{ startsWith(matrix.os, 'macos-') && github.event_name == 'release' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ steps.so_artifact_info.outputs.path }}
+        asset_name: ${{ steps.so_artifact_info.outputs.name }}
+        asset_content_type: application/zip # zipファイルなので
+
