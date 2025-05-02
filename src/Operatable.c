@@ -6,7 +6,7 @@
 #include "ext/standard/info.h"
 #include "php_rindow_operatorovl.h"
 
-/* ============== class "Rindow\OperatorOvl\Operand" ================ */
+/* ============== class "Rindow\OperatorOvl\Operatable" ================ */
 
 #define ALL_OPERATORS(PROC) \
   PROC(ADD,                 __add) \
@@ -110,7 +110,7 @@ static zend_object_handlers instance_object_handlers;
 /* {{{ destractor */
 static void operator_free_object(zend_object* object)
 {
-    php_rindow_operatorovl_operand_t* obj = php_rindow_operatorovl_operand_fetch_object(object);
+    php_rindow_operatorovl_operatable_t* obj = php_rindow_operatorovl_operatable_fetch_object(object);
     zend_object_std_dtor(&obj->std);
 }
 /* }}} */
@@ -118,9 +118,9 @@ static void operator_free_object(zend_object* object)
 /* {{{ constructor */
 static zend_object* operator_create_object(zend_class_entry* class_type) /* {{{ */
 {
-    php_rindow_operatorovl_operand_t* intern = NULL;
+    php_rindow_operatorovl_operatable_t* intern = NULL;
 
-    intern = (php_rindow_operatorovl_operand_t*)ecalloc(1, sizeof(php_rindow_operatorovl_operand_t) + zend_object_properties_size(class_type));
+    intern = (php_rindow_operatorovl_operatable_t*)ecalloc(1, sizeof(php_rindow_operatorovl_operatable_t) + zend_object_properties_size(class_type));
 
     zend_object_std_init(&intern->std, class_type);
     object_properties_init(&intern->std, class_type);
@@ -171,7 +171,7 @@ static int ZEND_FASTCALL operator_do_operation(zend_uchar opcode, zval *result, 
 }
 /* }}} */
 
-/* {{{ Rindow\OperatorOvl\Operand function entries */
+/* {{{ Rindow\OperatorOvl\Operatable function entries */
 static const zend_function_entry object_method_entries[] = {
     /* clang-format off */
     PHP_FE_END
@@ -179,10 +179,10 @@ static const zend_function_entry object_method_entries[] = {
 };
 /* }}} */
 
-/* Class Rindow\OperatorOvl\Operand {{{ */
+/* Class Rindow\OperatorOvl\Operatable {{{ */
 static zend_class_entry* object_class_entry;
 
-void php_rindow_operatorovl_operand_init_ce(INIT_FUNC_ARGS)
+void php_rindow_operatorovl_operatable_init_ce(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
 
@@ -191,7 +191,7 @@ void php_rindow_operatorovl_operand_init_ce(INIT_FUNC_ARGS)
 ALL_OPERATORS(PROC)
 #undef PROC
 
-    INIT_NS_CLASS_ENTRY(ce, "Rindow\\OperatorOvl", "Operand", object_method_entries);
+    INIT_NS_CLASS_ENTRY(ce, "Rindow\\OperatorOvl", "Operatable", object_method_entries);
     object_class_entry = zend_register_internal_class(&ce);
     object_class_entry->create_object = operator_create_object;
 

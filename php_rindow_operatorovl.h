@@ -12,19 +12,19 @@ extern zend_module_entry rindow_operatorovl_module_entry;
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
 
-/* {{{ class Rindow\OperatorOvl\Operand */
+/* {{{ class Rindow\OperatorOvl\Operatable */
 // object structures
 typedef struct {
     zend_object std;
-} php_rindow_operatorovl_operand_t;
+} php_rindow_operatorovl_operatable_t;
 
-static inline php_rindow_operatorovl_operand_t* php_rindow_operatorovl_operand_fetch_object(zend_object* obj)
+static inline php_rindow_operatorovl_operatable_t* php_rindow_operatorovl_operatable_fetch_object(zend_object* obj)
 {
-	return (php_rindow_operatorovl_operand_t*) ((char*) obj - XtOffsetOf(php_rindow_operatorovl_operand_t, std));
+	return (php_rindow_operatorovl_operatable_t*) ((char*) obj - XtOffsetOf(php_rindow_operatorovl_operatable_t, std));
 }
-extern void php_rindow_operatorovl_operand_init_ce(INIT_FUNC_ARGS);
+extern void php_rindow_operatorovl_operatable_init_ce(INIT_FUNC_ARGS);
 /* }}} */
 
-#define Z_RINDOW_OPERATOROVL_OPERAND_OBJ_P(zv) (php_rindow_operatorovl_operand_fetch_object(Z_OBJ_P(zv)))
+#define Z_RINDOW_OPERATOROVL_OPERATABLE_OBJ_P(zv) (php_rindow_operatorovl_operatable_fetch_object(Z_OBJ_P(zv)))
 
 #endif	/* PHP_RINDOW_OPERATOROVL_H */

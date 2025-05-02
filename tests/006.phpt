@@ -9,9 +9,9 @@ if (version_compare(PHP_VERSION, '8.2.0', '<')) echo 'skip Requires PHP 8.2+';
 ?>
 --FILE--
 <?php
-use Rindow\OperatorOvl\Operand;
+use Rindow\OperatorOvl\Operatable;
 
-class TestClass extends Operand
+class TestClass extends Operatable
 {
 	protected $value;
 

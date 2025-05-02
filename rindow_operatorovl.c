@@ -45,7 +45,7 @@ PHP_MINFO_FUNCTION(rindow_operatorovl)
  */
 PHP_MINIT_FUNCTION(rindow_operatorovl)
 {
-    php_rindow_operatorovl_operand_init_ce(INIT_FUNC_ARGS_PASSTHRU);
+    php_rindow_operatorovl_operatable_init_ce(INIT_FUNC_ARGS_PASSTHRU);
     return SUCCESS;
 }
 /* }}} */

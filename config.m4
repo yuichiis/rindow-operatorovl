@@ -11,7 +11,7 @@ if test "$PHP_RINDOW_OPERATOROVL" != "no"; then
 
   RINDOW_OPERATOROVL_SOURCES="\
     rindow_operatorovl.c \
-    src/Operand.c \
+    src/Operatable.c \
   "
   PHP_NEW_EXTENSION(rindow_operatorovl, $RINDOW_OPERATOROVL_SOURCES, $ext_shared)
 fi

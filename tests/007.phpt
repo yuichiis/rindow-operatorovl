@@ -8,7 +8,7 @@ if (!extension_loaded('rindow_operatorovl')) {
 ?>
 --FILE--
 <?php
-use Rindow\OperatorOvl\Operand;
+use Rindow\OperatorOvl\Operatable;
 
 class MathLib
 {
@@ -71,7 +71,7 @@ class MathLib
     }
 }
 
-class TestArray extends Operand
+class TestArray extends Operatable
 {
     static protected $mathlib;
 

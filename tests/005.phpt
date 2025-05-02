@@ -8,9 +8,9 @@ if (!extension_loaded('rindow_operatorovl')) {
 ?>
 --FILE--
 <?php
-use Rindow\OperatorOvl\Operand;
+use Rindow\OperatorOvl\Operatable;
 
-class TestClass extends Operand
+class TestClass extends Operatable
 {
 	protected $value;
 
