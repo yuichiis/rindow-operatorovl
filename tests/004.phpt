@@ -2,13 +2,13 @@
 operation Basic test
 --SKIPIF--
 <?php
-if (!extension_loaded('rindow_operatorovl')) {
+if (!extension_loaded('rindow_opoverride')) {
 	echo 'skip';
 }
 ?>
 --FILE--
 <?php
-use Rindow\OperatorOvl\Operatable;
+use Rindow\OpOverride\Operatable;
 
 class TestClass extends Operatable
 {

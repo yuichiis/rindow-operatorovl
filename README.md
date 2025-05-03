@@ -42,26 +42,26 @@ How to install pre-build binaries
 
 Download binary for your environment from Release page.
 
-- https://github.com/rindow/rindow-operatorovl/releases
+- https://github.com/rindow/rindow-opoverride/releases
 
 ### Install for Linux
 
 Install the deb file with the apt command
 ```shell
-$ sudo apt install ./rindow-operatorovl-phpX.X_X.X.X_amd64.deb
+$ sudo apt install ./rindow-opoverride-phpX.X_X.X.X_amd64.deb
 ```
 
 ### Install for Windows
 
 - Extract the zip file
 - Copy DLL file to the PHP extension directory.
-- Add the "extension=rindow_operatorovl" entry to php.ini
+- Add the "extension=rindow_opoverride" entry to php.ini
 
 ### Install for macOS
 
 - Extract the zip file
 - Copy .so file to the PHP extension directory.
-- Add the "extension=rindow_operatorovl" entry to php.ini
+- Add the "extension=rindow_opoverride" entry to php.ini
 
 
 How to build from source code on Windows
@@ -105,7 +105,7 @@ C:\tmp>PATH %PATH%;C:\php-sdk\msys2\usr\bin
 ```shell
 $ cd /path/to/here
 $ /path/to/php-devel-pack-x.x.x-Win32-VXXX-x64/phpize.bat
-$ configure --enable-rindow_operatorovl --with-prefix=/path/to/php-installation-path
+$ configure --enable-rindow_opoverride --with-prefix=/path/to/php-installation-path
 $ nmake clean
 $ nmake
 $ nmake test
@@ -113,15 +113,15 @@ $ nmake test
 
 ### Install from built directory
 
-- Copy the php extension binary(.dll) to the php/ext directory from here/arch/Releases_XX/php_rindow_operatorovl.dll
-- Add the "extension=php_rindow_operatorovl" entry to php.ini
+- Copy the php extension binary(.dll) to the php/ext directory from here/arch/Releases_XX/php_rindow_opoverride.dll
+- Add the "extension=php_rindow_opoverride" entry to php.ini
 
 
 Sample Code
 ===========
 ```php
 <?php
-use Rindow\OperatorOvl\Operatable;
+use Rindow\OpOverride\Operatable;
 
 class MathLib
 {

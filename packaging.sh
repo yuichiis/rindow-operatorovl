@@ -20,25 +20,25 @@ then
 else
         INI_DIR=`$PHP_CONFIG --ini-dir`
 fi
-RINDOW_OPERATOROVL_VERSION=`fgrep "# define PHP_RINDOW_OPERATOROVL_VERSION" php_rindow_operatorovl.h | cut -d " " -f 4 | cut -d "\"" -f 2`
+RINDOW_OPOVERRIDE_VERSION=`fgrep "# define PHP_RINDOW_OPOVERRIDE_VERSION" php_rindow_opoverride.h | cut -d " " -f 4 | cut -d "\"" -f 2`
 ARCHITECTURE=`dpkg --print-architecture`
 
 #. /etc/os-release
 #OS_VERSION=$ID$VERSION_ID
 echo EXTENSION_DIR=$EXTENSION_DIR
 echo INI_DIR=$INI_DIR
-echo RINDOW_OPERATOROVL_VERSION=$RINDOW_OPERATOROVL_VERSION
+echo RINDOW_OPOVERRIDE_VERSION=$RINDOW_OPOVERRIDE_VERSION
 echo ARCHITECTURE=$ARCHITECTURE
 #echo OS_VERSION=$OS_VERSION
 rm -rf $PKG_WORK
 mkdir -p $PKG_WORK$EXTENSION_DIR
 mkdir -p $PKG_WORK$INI_DIR
 mkdir -p $PKG_WORK/DEBIAN
-cp modules/rindow_operatorovl.so $PKG_WORK$EXTENSION_DIR/.
-chmod 744 $PKG_WORK$EXTENSION_DIR/rindow_operatorovl.so
-cp conf/20-rindow_operatorovl.ini $PKG_WORK$INI_DIR/.
-chmod 744 $PKG_WORK$INI_DIR/20-rindow_operatorovl.ini
-sed -e s/%PHP_RINDOW_OPERATOROVL_VERSION%/$RINDOW_OPERATOROVL_VERSION/g debian/control | \
+cp modules/rindow_opoverride.so $PKG_WORK$EXTENSION_DIR/.
+chmod 744 $PKG_WORK$EXTENSION_DIR/rindow_opoverride.so
+cp conf/20-rindow_opoverride.ini $PKG_WORK$INI_DIR/.
+chmod 744 $PKG_WORK$INI_DIR/20-rindow_opoverride.ini
+sed -e s/%PHP_RINDOW_OPOVERRIDE_VERSION%/$RINDOW_OPOVERRIDE_VERSION/g debian/control | \
 #sed -e s/%OS_VERSION%/$OS_VERSION/g | \
 sed -e s/%ARCHITECTURE%/$ARCHITECTURE/g | \
 sed -e s/%PHP_VERSION%/$PHP_VERSION/g > $PKG_WORK/DEBIAN/control
@@ -48,5 +48,5 @@ sed -e s/%PHP_VERSION%/$PHP_VERSION/g > $PKG_WORK/DEBIAN/control
 #cp debian/changelog $PKG_WORK/DEBIAN/.
 #cp debian/copyright $PKG_WORK/DEBIAN/.
 
-rm -f rindow-operatorovl*.deb
+rm -f rindow-opoverride*.deb
 fakeroot dpkg-deb --build pkgwork .

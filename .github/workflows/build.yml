@@ -203,10 +203,10 @@ jobs:
       id: ext_version
       shell: bash
       run: |
-        VERSION=$(sed -n 's/^ *# *define PHP_RINDOW_OPERATOROVL_VERSION *"\([^"]*\)".*/\1/p' php_rindow_operatorovl.h)
+        VERSION=$(sed -n 's/^ *# *define PHP_RINDOW_OPOVERRIDE_VERSION *"\([^"]*\)".*/\1/p' php_rindow_opoverride.h)
         if [[ -z "$VERSION" ]]; then
-          echo "Error: Could not extract version from php_rindow_operatorovl.h"
-          cat php_rindow_operatorovl.h || true
+          echo "Error: Could not extract version from php_rindow_opoverride.h"
+          cat php_rindow_opoverride.h || true
           exit 1
         fi
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
@@ -216,7 +216,7 @@ jobs:
       if: ${{ startsWith(matrix.os, 'ubuntu-') }}
       run: |
         phpize${{ matrix.php }}
-        ./configure --with-php-config=$(which php-config${{ matrix.php }}) --enable-rindow_operatorovl
+        ./configure --with-php-config=$(which php-config${{ matrix.php }}) --enable-rindow_opoverride
         make clean
         make
 
@@ -233,7 +233,7 @@ jobs:
   
         REM Configure the build (adjust paths and options if needed)
         REM Ensure config.w32 is used, enable the extension
-        call configure --enable-rindow_operatorovl --with-prefix=C:\tools\php
+        call configure --enable-rindow_opoverride --with-prefix=C:\tools\php
   
         nmake clean
         nmake
@@ -242,7 +242,7 @@ jobs:
       if: ${{ startsWith(matrix.os, 'macos-') }}
       run: |
         phpize
-        ./configure --with-php-config=$(which php-config) --enable-rindow_operatorovl
+        ./configure --with-php-config=$(which php-config) --enable-rindow_opoverride
         make clean
         make
 
@@ -317,14 +317,14 @@ jobs:
       id: dll_artifact_info
       shell: pwsh
       run: |
-        dir -Path . -Filter php_rindow_operatorovl.dll -Recurse -File
-        $dllPath = (Get-ChildItem -Recurse -Filter php_rindow_operatorovl.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        dir -Path . -Filter php_rindow_opoverride.dll -Recurse -File
+        $dllPath = (Get-ChildItem -Recurse -Filter php_rindow_opoverride.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
         if (-not $dllPath) {
-          echo "Error: Built DLL file (php_rindow_operatorovl.dll) not found!"
+          echo "Error: Built DLL file (php_rindow_opoverride.dll) not found!"
           Get-ChildItem -Recurse | Select-Object FullName -First 100
           exit 1
         }
-        $zipName = "rindow_operatorovl-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64.zip"
+        $zipName = "rindow_opoverride-php${{ matrix.php }}-${{ steps.ext_version.outputs.version }}-win-${{ matrix.ts }}-${{ matrix.vsalias}}-x64.zip"
         Compress-Archive -Path $dllPath -DestinationPath $zipName -Force
         echo "DLL path found: $dllPath"
         echo "Artifact name: $zipName"
@@ -354,16 +354,16 @@ jobs:
       if: ${{ startsWith(matrix.os, 'macos-') }}
       id: so_artifact_info
       run: |
-        SO_FILE=$(find . -path '*/modules/*.so' -name 'rindow_operatorovl.so' | head -n 1)
+        SO_FILE=$(find . -path '*/modules/*.so' -name 'rindow_opoverride.so' | head -n 1)
         if [[ -z "$SO_FILE" ]]; then
-          echo "Error: Built SO file (rindow_operatorovl.so) not found!"
+          echo "Error: Built SO file (rindow_opoverride.so) not found!"
           echo "Searching for .so files..."
           find . -name '*.so' -ls || true
           exit 1
         fi
         ARCH=$(uname -m)
         VERSION="${{ steps.ext_version.outputs.version }}"
-        ZIP_FILENAME="rindow_operatorovl-php${{ matrix.php }}-${VERSION}-macos-${ARCH}.zip"
+        ZIP_FILENAME="rindow_opoverride-php${{ matrix.php }}-${VERSION}-macos-${ARCH}.zip"
         zip -j "$ZIP_FILENAME" "$SO_FILE"
         echo "SO file found: $SO_FILE"
         echo "Artifact name: $ZIP_FILENAME"

@@ -2,14 +2,14 @@
 operation undefined function test (PHP 8.1)
 --SKIPIF--
 <?php
-if (!extension_loaded('rindow_operatorovl')) {
+if (!extension_loaded('rindow_opoverride')) {
 	echo 'skip';
 }
 if (version_compare(PHP_VERSION, '8.2.0', '>=')) echo 'skip Requires PHP 8.1';
 ?>
 --FILE--
 <?php
-use Rindow\OperatorOvl\Operatable;
+use Rindow\OpOverride\Operatable;
 
 class TestClass extends Operatable
 {

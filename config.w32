@@ -1,12 +1,12 @@
-ARG_ENABLE('rindow_operatorovl', 'rindow_operatorovl support', 'no');
+ARG_ENABLE('rindow_opoverride', 'rindow_opoverride support', 'no');
 
-if (PHP_RINDOW_OPERATOROVL != 'no') {
-	AC_DEFINE('HAVE_RINDOW_OPERATOROVL', 1, 'rindow_operatorovl support enabled');
-  	var PHP_RINDOW_OPERATOROVL_CFLAGS="\
+if (PHP_RINDOW_OPOVERRIDE != 'no') {
+	AC_DEFINE('HAVE_RINDOW_OPOVERRIDE', 1, 'rindow_opoverride support enabled');
+  	var PHP_RINDOW_OPOVERRIDE_CFLAGS="\
   	  /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 \
   	  /I" + configure_module_dirname + " \
   	";
 
-	EXTENSION('rindow_operatorovl', 'rindow_operatorovl.c', null, PHP_RINDOW_OPERATOROVL_CFLAGS);
-	ADD_SOURCES(configure_module_dirname + "/src", "Operatable.c", "rindow_operatorovl");
+	EXTENSION('rindow_opoverride', 'rindow_opoverride.c', null, PHP_RINDOW_OPOVERRIDE_CFLAGS);
+	ADD_SOURCES(configure_module_dirname + "/src", "Operatable.c", "rindow_opoverride");
 }

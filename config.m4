@@ -1,17 +1,17 @@
-dnl config.m4 for extension rindow_operatorovl
+dnl config.m4 for extension rindow_opoverride
 
-PHP_ARG_ENABLE([rindow_operatorovl],
-  [whether to enable rindow_operatorovl support],
-  [AS_HELP_STRING([--enable-rindow_operatorovl],
-    [Enable rindow_operatorovl support])],
+PHP_ARG_ENABLE([rindow_opoverride],
+  [whether to enable rindow_opoverride support],
+  [AS_HELP_STRING([--enable-rindow_opoverride],
+    [Enable rindow_opoverride support])],
   [yes])
 
-if test "$PHP_RINDOW_OPERATOROVL" != "no"; then
-  AC_DEFINE(HAVE_RINDOW_OPERATOROVL, 1, [ Have rindow_operatorovl support ])
+if test "$PHP_RINDOW_OPOVERRIDE" != "no"; then
+  AC_DEFINE(HAVE_RINDOW_OPOVERRIDE, 1, [ Have rindow_opoverride support ])
 
-  RINDOW_OPERATOROVL_SOURCES="\
-    rindow_operatorovl.c \
+  RINDOW_OPOVERRIDE_SOURCES="\
+    rindow_opoverride.c \
     src/Operatable.c \
   "
-  PHP_NEW_EXTENSION(rindow_operatorovl, $RINDOW_OPERATOROVL_SOURCES, $ext_shared)
+  PHP_NEW_EXTENSION(rindow_opoverride, $RINDOW_OPOVERRIDE_SOURCES, $ext_shared)
 fi
