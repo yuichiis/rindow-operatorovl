@@ -41,7 +41,7 @@
 // --- Configuration ---
 define('PLUGIN_NAME', 'rindow_opoverride');
 define('PLUGIN_VERSION', '0.1.0');
-define('DOWNLOAD_URL_BASE', 'https://github.com/yuichiis/rindow-opoverride/releases/download/');
+define('DOWNLOAD_URL_BASE', 'https://github.com/rindow/rindow-opoverride/releases/download/');
 // --- End Configuration ---
 
 
