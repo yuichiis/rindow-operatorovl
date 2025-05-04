@@ -1,8 +1,8 @@
-Rindow Operator Overloading PHP extension
+Rindow Operator Overriding PHP extension
 =========================================
-Provides operator overloading functionality in PHP programs.
+Provides operator overriding functionality in PHP programs.
 
-Instead of modifying the whole PHP, overload only the operators that work on a particular object class by letting the class inherit.
+Instead of modifying the whole PHP, override only the operators that work on a particular object class by letting the class inherit.
 
 By implementing the method corresponding to the operator in the object class, you have a user-defined type that can be used in the operation expression.
 
